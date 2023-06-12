@@ -1,8 +1,8 @@
 #######################################
 #                                     #
 #           H A R D C O R E +         #
-#                                     #
-#               By:Seauxz             #
+#              Ver: 1.1               #
+#              By:Seauxz              #
 #                                     #
 #######################################
 
@@ -22,4 +22,5 @@ ban-after-deaths-enabled: true # set to false to disable ban after deaths
 ban-after-deaths: 1 # number of deaths before the player gets banned
 
 place-head-on-death: true # set it to "false" will disable player heads
+
 
