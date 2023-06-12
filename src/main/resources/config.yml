@@ -1,0 +1,23 @@
+#######################################
+#                                     #
+#           H A R D C O R E +         #
+#                                     #
+#               By:Seauxz             #
+#                                     #
+#######################################
+
+
+action-on-death: "spectate" # can be either "ban" or "spectate"
+
+ban-length: 1 # in hours, 0 means permanent ban
+
+ban-message-enabled: true # set to false to disable ban message
+ban-message: "You died!" # message displayed to the player when they get banned
+
+ban-permissions: "hardcore.death.banimmune" # permission node to be immune from banning
+
+spectate-permissions: "hardcore.death.spectateimmune" # permission node to be immune from spectating
+
+ban-after-deaths-enabled: true # set to false to disable ban after deaths
+ban-after-deaths: 1 # number of deaths before the player gets banned
+
