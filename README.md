@@ -1,4 +1,4 @@
-# Hardcore Plugin
+# Hardcore+ Plugin
 
 The Hardcore Plugin is a custom Minecraft server plugin that adds hardcore gameplay elements to your server. It provides features such as player revival, banning on death, and configuration customization.
 
