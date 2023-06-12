@@ -10,3 +10,5 @@ permissions:
   hardcore.revive:
     description: Allows use of the revive command
     default: op
+api-version: 1.19
+

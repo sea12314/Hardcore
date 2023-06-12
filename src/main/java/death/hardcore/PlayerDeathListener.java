@@ -1,11 +1,16 @@
 package death.hardcore;
 
-import org.bukkit.GameMode;
 import org.bukkit.BanList;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.Skull;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -44,9 +49,25 @@ public class PlayerDeathListener implements Listener {
             if (action.equalsIgnoreCase("ban") && !player.hasPermission(banPermissions)) {
                 Date expiry = banLength > 0 ? new Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(banLength)) : null;
                 player.getServer().getBanList(BanList.Type.NAME).addBan(player.getName(), banMessageEnabled ? banMessage : null, expiry, "Hardcore plugin");
+                player.kickPlayer(banMessageEnabled ? banMessage : null); // Kick the player
             } else if (!player.hasPermission(spectatePermissions)) {
                 player.setGameMode(GameMode.SPECTATOR);
             }
         }
+
+        boolean placeHeadOnDeath = plugin.getConfig().getBoolean("place-head-on-death", true);
+
+        if (placeHeadOnDeath) {
+            placePlayerHead(player);
+        }
+    }
+
+    private void placePlayerHead(Player player) {
+        Block block = player.getLocation().getBlock();
+        block.setType(Material.PLAYER_HEAD);
+
+        Skull skull = (Skull) block.getState();
+        skull.setOwningPlayer(player);
+        skull.update();
     }
 }

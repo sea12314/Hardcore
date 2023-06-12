@@ -17,11 +17,6 @@ public class ReviveCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission("hardcore.revive")) {
-            sender.sendMessage("You do not have permission to use this command.");
-            return true;
-        }
-
         if (args.length != 1) {
             sender.sendMessage("Usage: /revive <player>");
             return false;
