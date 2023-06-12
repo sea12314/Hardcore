@@ -6,6 +6,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Hardcore extends JavaPlugin {
     private File deathsFile;
@@ -32,6 +35,19 @@ public class Hardcore extends JavaPlugin {
         }
 
         deathsData = YamlConfiguration.loadConfiguration(deathsFile);
+
+        // Fetching all world names
+        List<String> worldNames = getServer().getWorlds().stream().map(world -> world.getName()).collect(Collectors.toList());
+
+        // Creating the configuration for each world if not already present
+        worldNames.forEach(name -> {
+            if(!getConfig().contains("worlds." + name)){
+                getConfig().set("worlds." + name, true);
+            }
+        });
+
+        // Save the updated config file
+        saveConfig();
     }
 
     public void saveDeathsData() {

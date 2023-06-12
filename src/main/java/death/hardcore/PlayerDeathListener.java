@@ -43,6 +43,10 @@ public class PlayerDeathListener implements Listener {
         boolean banAfterDeathsEnabled = plugin.getConfig().getBoolean("ban-after-deaths-enabled", true);
         int playerDeaths = plugin.getDeathsData().getInt(player.getUniqueId().toString(), 0) + 1;
 
+        if (!plugin.getConfig().getBoolean("worlds." + player.getWorld().getName(), true)) {
+            return;
+        }
+
         plugin.getDeathsData().set(player.getUniqueId().toString(), playerDeaths);
 
         if(banAfterDeathsEnabled && playerDeaths >= banAfterDeaths){

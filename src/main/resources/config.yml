@@ -1,7 +1,7 @@
 #######################################
 #                                     #
 #           H A R D C O R E +         #
-#              Ver: 1.1               #
+#                V1.2                 #
 #              By:Seauxz              #
 #                                     #
 #######################################
@@ -23,4 +23,9 @@ ban-after-deaths: 1 # number of deaths before the player gets banned
 
 place-head-on-death: true # set it to "false" will disable player heads
 
+# Choose which worlds you want the plugin to be enabled in (For any custom worlds or worlds with different names, edit that accordingly.)
+worlds:
+  world: true
+  world_nether: true
+  world_the_end: true
 
