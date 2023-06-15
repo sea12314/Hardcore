@@ -1,8 +1,10 @@
 package death.hardcore;
 
 import org.bukkit.BanList;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
 import org.bukkit.entity.Player;
@@ -12,11 +14,12 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class PlayerDeathListener implements Listener {
@@ -31,7 +34,6 @@ public class PlayerDeathListener implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
-        // Your existing code here...
 
         String action = plugin.getConfig().getString("action-on-death", "spectate");
         String banMessage = plugin.getConfig().getString("ban-message", "You died!");
@@ -61,17 +63,21 @@ public class PlayerDeathListener implements Listener {
 
         boolean placeHeadOnDeath = plugin.getConfig().getBoolean("place-head-on-death", true);
         if (placeHeadOnDeath) {
-            placePlayerHead(player);
+            String deathTimestamp = String.valueOf(System.currentTimeMillis());
+            placePlayerHead(player, deathTimestamp);
         }
 
+        // Create a copy of the player's inventory
+        ItemStack[] inventoryCopy = player.getInventory().getContents().clone();
+
         // Store player items in your data file
-        List<ItemStack> inventoryItems = new ArrayList<>(Arrays.asList(player.getInventory().getContents()));
+        List<ItemStack> inventoryItems = new ArrayList<>(Arrays.asList(inventoryCopy));
         List<ItemStack> armorItems = new ArrayList<>(Arrays.asList(player.getInventory().getArmorContents()));
 
         plugin.getDeathsData().set(player.getUniqueId().toString() + ".inventory", inventoryItems);
         plugin.getDeathsData().set(player.getUniqueId().toString() + ".armor", armorItems);
 
-        // Don't drop items on death
+        // Don't drop
         event.getDrops().clear();
 
         deathsSinceLastSave++;
@@ -81,6 +87,7 @@ public class PlayerDeathListener implements Listener {
         }
     }
 
+
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
@@ -89,40 +96,53 @@ public class PlayerDeathListener implements Listener {
             Player player = event.getPlayer();
             if (skull.hasOwner()) {
                 Player deadPlayer = skull.getOwningPlayer().getPlayer();
-                if (deadPlayer != null) {
-                    Inventory inventory = plugin.getServer().createInventory(new HeadInventoryHolder(deadPlayer), 27, deadPlayer.getName() + "'s Items");
 
-                    List<ItemStack> inventoryItems = (List<ItemStack>) plugin.getDeathsData().getList(deadPlayer.getUniqueId().toString() + ".inventory");
-                    List<ItemStack> armorItems = (List<ItemStack>) plugin.getDeathsData().getList(deadPlayer.getUniqueId().toString() + ".armor");
-
-                    if (inventoryItems != null) {
-                        for (ItemStack item : inventoryItems) {
-                            if (item != null) {
-                                inventory.addItem(item);
-                            }
-                        }
-                    }
-
-                    if (armorItems != null) {
-                        for (ItemStack item : armorItems) {
-                            if (item != null) {
-                                inventory.addItem(item);
-                            }
-                        }
-                    }
-
-                    player.openInventory(inventory);
+                // Skip if deadPlayer is null
+                if (deadPlayer == null) {
+                    return;
                 }
+
+                List<ItemStack> inventoryItems = (List<ItemStack>) plugin.getDeathsData().getList(deadPlayer.getUniqueId().toString() + ".inventory");
+                List<ItemStack> armorItems = (List<ItemStack>) plugin.getDeathsData().getList(deadPlayer.getUniqueId().toString() + ".armor");
+
+                // Combine inventory and armor items
+                List<ItemStack> combinedItems = new ArrayList<>();
+                if (inventoryItems != null) combinedItems.addAll(inventoryItems);
+                if (armorItems != null) combinedItems.addAll(armorItems);
+
+                // Create HeadInventoryHolder with dead player and their items
+                Inventory inventory = plugin.getServer().createInventory(new HeadInventoryHolder(deadPlayer, combinedItems.toArray(new ItemStack[0])), 27, deadPlayer.getName() + "'s Items");
+
+                if (inventoryItems != null) {
+                    for (ItemStack item : inventoryItems) {
+                        if (item != null) {
+                            inventory.addItem(item);
+                        }
+                    }
+                }
+
+                if (armorItems != null) {
+                    for (ItemStack item : armorItems) {
+                        if (item != null) {
+                            inventory.addItem(item);
+                        }
+                    }
+                }
+
+                player.openInventory(inventory);
             }
         }
     }
 
-    private void placePlayerHead(Player player) {
+
+    private void placePlayerHead(Player player, String deathTimestamp) {
         Block block = player.getLocation().getBlock();
         block.setType(Material.PLAYER_HEAD);
 
         Skull skull = (Skull) block.getState();
         skull.setOwningPlayer(player);
+        skull.getPersistentDataContainer().set(new NamespacedKey(plugin, "deathTimestamp"), PersistentDataType.STRING, deathTimestamp);
         skull.update();
     }
 }
+

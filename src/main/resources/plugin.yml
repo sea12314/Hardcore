@@ -1,8 +1,8 @@
 name: Hardcore
 main: death.hardcore.Hardcore
-version: 1.2
+version: 1.3.0
 author: Seauxz
-api-version: 1.19
+api-version: 1.16
 
 commands:
   revive:
@@ -12,6 +12,9 @@ commands:
     description: Reloads the configuration
     usage: /<command> reload
     permission: hardcore.reload
+  lives:
+    description: Displays the number of lives a player has left.
+    usage: /<command>
 
 permissions:
   hardcore.revive:
@@ -20,3 +23,6 @@ permissions:
   hardcore.reload:
     description: Allows use of the hardcore reload command
     default: op
+  hardcore.lives:
+    description: Allows use of the lives command
+    default: true

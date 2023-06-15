@@ -2,7 +2,6 @@ package death.hardcore;
 
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -18,8 +17,12 @@ public class ReviveCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!sender.isOp()) {
+            sender.sendMessage("You do not have permission to use this command.");
+            return true;
+        }
+
         if (command.getName().equalsIgnoreCase("revive")) {
-            // Handle the revive command
             if (args.length != 1) {
                 sender.sendMessage("Usage: /revive <player>");
                 return false;
@@ -47,20 +50,6 @@ public class ReviveCommand implements CommandExecutor {
             }
 
             return true;
-        }
-
-        if (command.getName().equalsIgnoreCase("hardcore")) {
-            if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
-                // Handle the hardcore reload command
-                if (sender.isOp()) {
-                    // Reload the configuration here
-                    plugin.reloadConfig();
-                    sender.sendMessage(ChatColor.GREEN + "Configuration reloaded successfully.");
-                } else {
-                    sender.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
-                }
-                return true;
-            }
         }
 
         return false;
