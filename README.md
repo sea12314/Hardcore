@@ -35,6 +35,7 @@ The `config.yml` file allows you to customize various aspects of the plugin, inc
 
 - `hardcore.revive` - Allows players to use the revive command.
 - `hardcore.reload` - Allows players to use the reload command.
+- `hardcore.lives` - Allows players to use the lives command.
 
 ## Contributing
 
