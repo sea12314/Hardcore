@@ -12,8 +12,8 @@ The Hardcore Plugin is a custom Minecraft server plugin that adds hardcore gamep
 
 ## Requirements
 
-- Java 17
-- Minecraft Server (Spigot or Paper) 1.19 or higher
+- Java 11, 16, or 17
+- Minecraft Server (Spigot or Paper) 1.16 or higher
 
 ## Installation
 
