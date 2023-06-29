@@ -1,7 +1,7 @@
 #######################################
 #                                     #
 #           H A R D C O R E +         #
-#                V1.2.1               #
+#              V1.4-Alpha             #
 #              By:Seauxz              #
 #                                     #
 #######################################
@@ -23,7 +23,17 @@ ban-after-deaths: 1 # number of deaths before the player gets banned
 
 place-head-on-death: true # set it to "false" will disable player heads
 
-# Choose which worlds you want the plugin to be enabled in (For any custom worlds or worlds with different names, edit that accordingly.)
+# If set to true, players can only lose lives by being killed by other players.
+# If false, deaths from all causes will result in loss of life.
+lose-lives-only-by-players: false
+
+spawn-thunder-on-death: true # Enable or disable spawning of thunder at the location of death.
+
+steal-lives: false # Enable or disable the ability for players to steal lives by killing.
+max-lives: 10 # Maximum number of lives a player can have.
+
+# List of worlds in which the plugin will be active.
+# Edit or/and add according to the names of your own worlds.
 worlds:
   world: true
   world_nether: true

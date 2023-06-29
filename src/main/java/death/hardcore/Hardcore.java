@@ -26,6 +26,7 @@ public class Hardcore extends JavaPlugin implements Listener {
 
         getCommand("lives").setExecutor(new LivesCommand(this));
         getCommand("revive").setExecutor(new ReviveCommand(this));
+        getCommand("givelife").setExecutor(new GiveLifeCommand(this));
 
         File dataFolder = new File(getDataFolder(), "data");
         if (!dataFolder.exists()) {

@@ -49,6 +49,25 @@ public class PlayerDeathListener implements Listener {
             return;
         }
 
+        boolean loseLivesOnlyByPlayers = plugin.getConfig().getBoolean("lose-lives-only-by-players", false);
+        if (loseLivesOnlyByPlayers && !(event.getEntity().getKiller() instanceof Player)) {
+            return;
+        }
+
+
+        boolean stealLives = plugin.getConfig().getBoolean("steal-lives", true);
+        int maxLives = plugin.getConfig().getInt("max-lives", 10);
+
+        if (stealLives && event.getEntity().getKiller() instanceof Player) {
+            Player killer = event.getEntity().getKiller();
+            int killerDeaths = plugin.getDeathsData().getInt(killer.getUniqueId().toString(), 0);
+            if (killerDeaths > 0) { // If the killer has any lives to gain
+                plugin.getDeathsData().set(killer.getUniqueId().toString(), Math.max(0, killerDeaths - 1));
+                plugin.saveDeathsData();
+            }
+        }
+
+
         plugin.getDeathsData().set(player.getUniqueId().toString(), playerDeaths);
 
         if(banAfterDeathsEnabled && playerDeaths >= banAfterDeaths){
