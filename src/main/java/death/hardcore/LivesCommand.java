@@ -22,11 +22,9 @@ public class LivesCommand implements CommandExecutor {
             }
 
             Player player = (Player) sender;
-            int playerDeaths = plugin.getDeathsData().getInt(player.getUniqueId().toString(), 0);
-            int maxDeaths = plugin.getConfig().getInt("ban-after-deaths", 3);
-            int livesLeft = maxDeaths - playerDeaths;
+            int playerLives = plugin.getDeathsData().getInt(player.getUniqueId().toString() + ".lives", plugin.getConfig().getInt("starting-lives", 3));
 
-            player.sendMessage(ChatColor.GREEN + "You currently have " + ChatColor.YELLOW + livesLeft + ChatColor.GREEN + " lives left.");
+            player.sendMessage(ChatColor.GREEN + "You currently have " + ChatColor.YELLOW + playerLives + ChatColor.GREEN + " lives.");
             return true;
         }
         return false;

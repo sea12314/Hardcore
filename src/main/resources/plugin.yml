@@ -1,6 +1,6 @@
 name: Hardcore
 main: death.hardcore.Hardcore
-version: 1.4-Alpha
+version: 1.4.0-Beta
 author: Seauxz
 api-version: 1.16
 
@@ -19,6 +19,14 @@ commands:
     description: Gives a life to a player.
     usage: /<command> <player>
     permission: hardcore.givelife
+  removelife:
+    description: Removes lives from a player.
+    usage: /<command> <player>
+    permission: hardcore.removelife
+  clearheads:
+    description: Clear all player heads
+    usage: /<command>
+    permission: hardcore.clearheads
 
 permissions:
   hardcore.revive:
@@ -32,4 +40,10 @@ permissions:
     default: true
   hardcore.givelife:
     description: Allows use of the givelife command
+    default: op
+  hardcore.removelife:
+    description: Removes lives from a player.
+    default: op
+  hardcore.clearheads:
+    description: Allows use of the clearheads command
     default: op

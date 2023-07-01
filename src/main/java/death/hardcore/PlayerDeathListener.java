@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.event.block.Action;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,43 +35,42 @@ public class PlayerDeathListener implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
+        Player killer = player.getKiller();
 
         String action = plugin.getConfig().getString("action-on-death", "spectate");
         String banMessage = plugin.getConfig().getString("ban-message", "You died!");
         String banPermissions = plugin.getConfig().getString("ban-permissions", "hardcore.death.banimmune");
         String spectatePermissions = plugin.getConfig().getString("spectate-permissions", "hardcore.death.spectateimmune");
         int banLength = plugin.getConfig().getInt("ban-length", 0);
-        int banAfterDeaths = plugin.getConfig().getInt("ban-after-deaths", 3);
+        int startingLives = plugin.getConfig().getInt("starting-lives", 3);
         boolean banMessageEnabled = plugin.getConfig().getBoolean("ban-message-enabled", true);
         boolean banAfterDeathsEnabled = plugin.getConfig().getBoolean("ban-after-deaths-enabled", true);
-        int playerDeaths = plugin.getDeathsData().getInt(player.getUniqueId().toString(), 0) + 1;
 
         if (!plugin.getConfig().getBoolean("worlds." + player.getWorld().getName(), true)) {
             return;
         }
+
+        int playerDeaths = plugin.getDeathsData().getInt(player.getUniqueId().toString() + ".deaths", 0) + 1;
+        plugin.getDeathsData().set(player.getUniqueId().toString() + ".deaths", playerDeaths);
+
+        int playerLives = plugin.getDeathsData().getInt(player.getUniqueId().toString() + ".lives", startingLives) - 1;
+        plugin.getDeathsData().set(player.getUniqueId().toString() + ".lives", playerLives);
+
+        boolean stealLives = plugin.getConfig().getBoolean("steal-lives", false);
+
+        if (stealLives && killer != null) {
+            int killerLives = plugin.getDeathsData().getInt(killer.getUniqueId().toString() + ".lives", startingLives) + 1;
+            plugin.getDeathsData().set(killer.getUniqueId().toString() + ".lives", killerLives);
+        }
+
+        plugin.saveDeathsData();
 
         boolean loseLivesOnlyByPlayers = plugin.getConfig().getBoolean("lose-lives-only-by-players", false);
         if (loseLivesOnlyByPlayers && !(event.getEntity().getKiller() instanceof Player)) {
             return;
         }
 
-
-        boolean stealLives = plugin.getConfig().getBoolean("steal-lives", true);
-        int maxLives = plugin.getConfig().getInt("max-lives", 10);
-
-        if (stealLives && event.getEntity().getKiller() instanceof Player) {
-            Player killer = event.getEntity().getKiller();
-            int killerDeaths = plugin.getDeathsData().getInt(killer.getUniqueId().toString(), 0);
-            if (killerDeaths > 0) { // If the killer has any lives to gain
-                plugin.getDeathsData().set(killer.getUniqueId().toString(), Math.max(0, killerDeaths - 1));
-                plugin.saveDeathsData();
-            }
-        }
-
-
-        plugin.getDeathsData().set(player.getUniqueId().toString(), playerDeaths);
-
-        if(banAfterDeathsEnabled && playerDeaths >= banAfterDeaths){
+        if(banAfterDeathsEnabled && playerLives <= 0){
             if (action.equalsIgnoreCase("ban") && !player.hasPermission(banPermissions)) {
                 Date expiry = banLength > 0 ? new Date(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(banLength)) : null;
                 player.getServer().getBanList(BanList.Type.NAME).addBan(player.getName(), banMessageEnabled ? banMessage : null, expiry, "Hardcore plugin");
@@ -109,15 +109,19 @@ public class PlayerDeathListener implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
+        Action action = event.getAction();
         Block block = event.getClickedBlock();
-        if (block != null && block.getType() == Material.PLAYER_HEAD) {
+
+        // Check if action is right click and block is a player head
+        if (block != null && block.getType() == Material.PLAYER_HEAD && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)) {
             Skull skull = (Skull) block.getState();
             Player player = event.getPlayer();
+
             if (skull.hasOwner()) {
                 Player deadPlayer = skull.getOwningPlayer().getPlayer();
 
-                // Skip if deadPlayer is null
-                if (deadPlayer == null) {
+                // Skip if deadPlayer is null or if there's no record for this player in plugin data
+                if (deadPlayer == null || !plugin.getDeathsData().contains(deadPlayer.getUniqueId().toString())) {
                     return;
                 }
 
@@ -152,6 +156,7 @@ public class PlayerDeathListener implements Listener {
             }
         }
     }
+
 
 
     private void placePlayerHead(Player player, String deathTimestamp) {

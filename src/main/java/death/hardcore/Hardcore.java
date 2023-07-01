@@ -24,9 +24,27 @@ public class Hardcore extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new PlayerDeathListener(this), this);
         getServer().getPluginManager().registerEvents(this, this);
 
+        getLogger().info("");
+        getLogger().info("");
+        getLogger().info("░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
+        getLogger().info("░░██╗░░██╗░█████╗░██████╗░██████╗░░█████╗░░█████╗░██████╗░███████╗░░░░░░░░░░░░░░░░░");
+        getLogger().info("░░██║░░██║██╔══██╗██╔══██╗██╔══██╗██╔══██╗██╔══██╗██╔══██╗██╔════╝░░░░░░░░░░██╗░░░░");
+        getLogger().info("░░███████║███████║██████╔╝██║░░██║██║░░╚═╝██║░░██║██████╔╝█████╗░░░░░░░░░░██████╗░░");
+        getLogger().info("░░██╔══██║██╔══██║██╔══██╗██║░░██║██║░░██╗██║░░██║██╔══██╗██╔══╝░░░░░░░░░░╚═██╔═╝░░");
+        getLogger().info("░░██║░░██║██║░░██║██║░░██║██████╔╝╚█████╔╝╚█████╔╝██║░░██║███████╗░░░░░░░░░░╚═╝░░░░");
+        getLogger().info("░░╚═╝░░╚═╝╚═╝░░╚═╝╚═╝░░╚═╝╚═════╝░░╚════╝░░╚════╝░╚═╝░░╚═╝╚══════╝░░░░░░░░░░░░░░░░░");
+        getLogger().info("░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
+        getLogger().info("Hardcore+ Was Started Up with 0 Errors!");
+        getLogger().info("");
+
+
+
+
         getCommand("lives").setExecutor(new LivesCommand(this));
         getCommand("revive").setExecutor(new ReviveCommand(this));
-        getCommand("givelife").setExecutor(new GiveLifeCommand(this));
+        this.getCommand("givelife").setExecutor(new GiveLifeCommand(this));
+        this.getCommand("removelife").setExecutor(new RemoveLifeCommand(this));
+        this.getCommand("clearheads").setExecutor(new ClearHeadsCommand());
 
         File dataFolder = new File(getDataFolder(), "data");
         if (!dataFolder.exists()) {
